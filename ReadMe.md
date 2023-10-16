@@ -2,7 +2,12 @@
 
 A mini validation library in Pure Go.
 
-Please create an issue if you have any suggestions or find any bugs / problems.
+Please create an issue if you have any:
+
+1. Questions
+2. Suggestions
+3. Find any bugs
+4. Want to point out any mistakes
 
 ## Example
 
@@ -27,7 +32,50 @@ func main(){
 }
 ```
 
-## Benchmark
+## Benchmark (Needs improvement)
+
+### Methodology
+
+We will be using a fake response struct to test the benchmark the performance of the library.
+This can be further extended to test the performance of the library on a real world scenarios.
+
+```go
+type Response struct {
+	Code    int            // Must be non-zero.
+	Message string         // Must be non-empty.
+	Extras  map[string]any // Must be non-nil.
+}
+```
+
+### Validation logic
+
+Validation logic for this library is as follows.
+
+```go
+func validateResponseLazy(resp *Response) error {
+	return NewLazyValidator().WithOptions(
+		options.IsNotEmpty(resp.Code),
+		options.IsNotEmpty(resp.Message),
+		options.WithRequire(func() bool { return resp.Extras != nil }, errTest),
+	).Validate()
+}
+
+```
+
+Validation logic for the Ozzo library is as follows.
+
+```go
+func validateResponseOzzo(resp *Response) error {
+	return validation.ValidateStruct(
+		resp,
+		validation.Field(&resp.Code, validation.NilOrNotEmpty),
+		validation.Field(&resp.Message, validation.NilOrNotEmpty),
+		validation.Field(&resp.Extras, validation.NotNil),
+	)
+}
+```
+
+### Results
 
 This is the test results on my PC.
 
@@ -49,3 +97,9 @@ PASS
 
 ok  	github.com/Jh123x/go-validate/validator	15.144s
 ```
+
+## Future tasks
+
+- [ ] Add more validation options
+- [ ] A more comprehensive benchmark
+- [ ] Other types of validators for different use cases
