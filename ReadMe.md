@@ -9,6 +9,13 @@ Please create an issue if you have any:
 3. Find any bugs
 4. Want to point out any mistakes
 
+## Features
+
+1. Customized error messages for your validation rules
+2. Easy to write custom rules
+3. Define your own validation method
+4. Fast
+
 ## Example
 
 ```go
