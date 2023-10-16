@@ -12,9 +12,14 @@ import (
 
 func main(){
     validator := NewLazyValidator()
-    validator.Validate(
-        IsNotEmpty("").WithError()
-    )
+    isValidated, err := validator.WithOptions(
+        IsNotEmpty("").WithError(fmt.Errorf("empty string")),               // Fails and returns error.
+        IsLength([]string{}, 0, 3).WithError(fmt.Errorf("empty string")),   // Will not be evaluated.
+    ).Validate()
+    if err != nil {
+        // handle error
+        ...
+    }
 }
 
 ```
