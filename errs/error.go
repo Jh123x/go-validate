@@ -1,4 +1,4 @@
-package govalidate
+package errs
 
 import (
 	"fmt"
@@ -20,9 +20,4 @@ func NewValidateError(fieldName, errMsg string) ValidateError {
 // Error returns the error message.
 func (v ValidateError) Error() string {
 	return fmt.Sprintf(ErrorFormat, v.checkName, v.errMsg)
-}
-
-// ValidateErrGenerator returns a ValidateError with the given field name and error message.
-func ValidateErrGenerator(checkName, errMsg string) ValidateError {
-	return NewValidateError(checkName, errMsg)
 }
