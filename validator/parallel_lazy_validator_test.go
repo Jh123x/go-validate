@@ -10,7 +10,7 @@ import (
 )
 
 // TestLazyValidator tests the LazyValidator.
-func TestValidator(t *testing.T) {
+func TestParallelLazyValidator(t *testing.T) {
 	tests := map[string]struct {
 		options     []ttypes.Validate
 		expectedErr error
@@ -31,15 +31,15 @@ func TestValidator(t *testing.T) {
 
 	for testName, testCase := range tests {
 		t.Run(testName, func(t *testing.T) {
-			validator := NewValidator()
+			validator := NewParallelLazyValidator()
 			assert.Equal(t, testCase.expectedErr, validator.WithOptions(testCase.options...).Validate())
 		})
 	}
 }
 
 // TestNilLazyValidator tests the LazyValidator with nil.
-func TestNilValidator(t *testing.T) {
-	val := (*Validator)(nil)
+func TestNilParallelLazyValidator(t *testing.T) {
+	val := (*ParallelLazyValidator)(nil)
 	t.Run("with options should return nil", func(t *testing.T) {
 		assert.Nil(t, val.WithOptions(validateWErr))
 	})
@@ -49,30 +49,19 @@ func TestNilValidator(t *testing.T) {
 }
 
 // TestLazyValidator_cache ensure that LazyValidator can be cached.
-func TestValidator_Caching(t *testing.T) {
-	validator := NewValidator()
+func TestParallelLazyValidator_Caching(t *testing.T) {
+	validator := NewParallelLazyValidator()
 	validator2 := validator.WithOptions(validateWErr)
 	assert.Nil(t, validator.Validate())
 	assert.Equal(t, errTest, validator2.Validate())
 }
 
 // TestLazyValidator_ReadMeExample tests the example in the README.
-func TestValidator_ReadMeExample(t *testing.T) {
-	validator := NewValidator()
+func TestParallelLazyValidator_ReadMeExample(t *testing.T) {
+	validator := NewParallelLazyValidator()
 	err := validator.WithOptions(
 		options.IsNotEmpty("").WithError(fmt.Errorf("empty string")),             // Fails and returns error.
 		options.IsLength([]string{}, 0, 3).WithError(fmt.Errorf("empty string")), // Will not be evaluated.
-	).Validate()
-	assert.Equal(t, fmt.Errorf("empty string"), err)
-}
-
-func TestValidator_ErrorInBetween(t *testing.T) {
-	validator := NewValidator()
-	err := validator.WithOptions(
-		options.IsNotEmpty("").WithError(fmt.Errorf("empty string")), // Fails and returns error.
-	).WithOptions(
-		options.IsLength([]string{}, 0, 3).WithError(fmt.Errorf("empty string")), // Will not be evaluated.
-		options.IsNotEmpty(""),
 	).Validate()
 	assert.Equal(t, fmt.Errorf("empty string"), err)
 }
