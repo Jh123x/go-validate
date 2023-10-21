@@ -2,36 +2,37 @@ package validator
 
 import "github.com/Jh123x/go-validate/ttypes"
 
-type LazyValidator struct {
-	options []ttypes.Validate
+type Validator struct {
+	currErr error
 }
 
-var _ ttypes.Validator[LazyValidator] = (*LazyValidator)(nil)
+var _ ttypes.Validator[Validator] = (*Validator)(nil)
 
 // NewLazyValidator returns a new LazyValidator.
-func NewLazyValidator() *LazyValidator {
-	return &LazyValidator{}
+func NewValidator() *Validator {
+	return &Validator{currErr: nil}
 }
 
 // WithOptions returns a new LazyValidator with the given options.
-func (l *LazyValidator) WithOptions(opts ...ttypes.Validate) *LazyValidator {
+func (l *Validator) WithOptions(opts ...ttypes.Validate) *Validator {
 	if l == nil {
 		return nil
 	}
-	newValidator := *l
-	newValidator.options = append(l.options, opts...)
-	return &newValidator
+	for _, opt := range opts {
+		if l.currErr != nil {
+			return &Validator{currErr: l.currErr}
+		}
+		if err := opt(); err != nil {
+			return &Validator{currErr: err}
+		}
+	}
+	return NewValidator()
 }
 
 // Validate validates the options provided.
-func (l *LazyValidator) Validate() error {
+func (l *Validator) Validate() error {
 	if l == nil {
 		return nil
 	}
-	for _, opt := range l.options {
-		if err := opt(); err != nil {
-			return err
-		}
-	}
-	return nil
+	return l.currErr
 }
