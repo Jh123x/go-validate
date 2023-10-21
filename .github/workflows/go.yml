@@ -25,4 +25,14 @@ jobs:
       run: go build -v ./...
 
     - name: Test
-      run: go test -v ./...
+      run: go test -v ./... -coverprofile=./coverage.out
+
+    - name: check test coverage
+      uses: vladopajic/go-test-coverage@v2
+      with:
+        # Configure action by specifying input parameters individually (option 2)
+        profile: coverage.out
+        local-prefix: github.com/Jh123x/go-validate
+        threshold-file: 80
+        threshold-package: 80
+        threshold-total: 95
