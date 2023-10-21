@@ -22,3 +22,6 @@ go.work
 
 # ignore temp files
 .tmp
+
+# ignore test script
+test.sh

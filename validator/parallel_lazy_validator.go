@@ -1,6 +1,13 @@
 package validator
 
-import "github.com/Jh123x/go-validate/ttypes"
+import (
+	"github.com/Jh123x/go-validate/ttypes"
+	lop "github.com/gozelle/lo/parallel"
+)
+
+var (
+	mapperFn = func(opt ttypes.Validate, _ int) error { return opt() }
+)
 
 type ParallelLazyValidator struct {
 	options []ttypes.Validate
@@ -28,21 +35,12 @@ func (l *ParallelLazyValidator) Validate() error {
 	if l == nil {
 		return nil
 	}
-	// Channel for parallel validation.
-	errChan := make(chan error, len(l.options))
 
-	// Run all validations in parallel.
-	for _, opt := range l.options {
-		go func(opt ttypes.Validate) {
-			errChan <- opt()
-		}(opt)
-	}
-
-	// Collect all errors.
-	for i := 0; i < len(l.options); i++ {
-		if err := <-errChan; err != nil {
+	for _, err := range lop.Map(l.options, mapperFn) {
+		if err != nil {
 			return err
 		}
 	}
+
 	return nil
 }

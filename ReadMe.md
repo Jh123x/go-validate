@@ -130,35 +130,51 @@ goos: windows
 goarch: amd64
 pkg: github.com/Jh123x/go-validate/validator
 cpu: AMD Ryzen 5 7600 6-Core Processor
-BenchmarkData/with_err_in_setIfOptSet_for_TestLazyValidator-12         	  826958	      1300 ns/op	    1248 B/op	      37 allocs/op
-BenchmarkData/with_err_in_setIfOptSet_for_TestInvopop-12               	  570406	      2112 ns/op	    2353 B/op	      48 allocs/op
-BenchmarkData/with_error_in_extras_for_TestLazyValidator-12            	  994496	      1092 ns/op	    1072 B/op	      33 allocs/op
-BenchmarkData/with_error_in_extras_for_TestInvopop-12                  	  570580	      2047 ns/op	    2329 B/op	      48 allocs/op
-BenchmarkData/no_errors_for_TestLazyValidator-12                       	 1000000	      1075 ns/op	    1072 B/op	      33 allocs/op
-BenchmarkData/no_errors_for_TestInvopop-12                             	  773055	      1682 ns/op	    1913 B/op	      41 allocs/op
-BenchmarkData/with_error_in_code_for_TestLazyValidator-12              	  932284	      1231 ns/op	    1216 B/op	      36 allocs/op
-BenchmarkData/with_error_in_code_for_TestInvopop-12                    	  557136	      2064 ns/op	    2345 B/op	      48 allocs/op
-BenchmarkData/with_error_in_message_for_TestLazyValidator-12           	  955764	      1229 ns/op	    1216 B/op	      36 allocs/op
-BenchmarkData/with_error_in_message_for_TestInvopop-12                 	  567538	      2127 ns/op	    2393 B/op	      49 allocs/op
-BenchmarkData/with_error_in_optional_for_TestInvopop-12                	  596101	      2049 ns/op	    2353 B/op	      48 allocs/op
-BenchmarkData/with_error_in_optional_for_TestLazyValidator-12          	  957708	      1284 ns/op	    1248 B/op	      37 allocs/op
-BenchmarkData/with_no_error_in_optional_for_TestLazyValidator-12       	 1000000	      1074 ns/op	    1072 B/op	      33 allocs/op
-BenchmarkData/with_no_error_in_optional_for_TestInvopop-12             	  749296	      1666 ns/op	    1913 B/op	      41 allocs/op
+BenchmarkData/with_no_error_in_optional_for_TestValidator-12         	  958305	      1139 ns/op	    1056 B/op	      33 allocs/op
+BenchmarkData/with_no_error_in_optional_for_TestLazyValidator-12     	  998826	      1072 ns/op	    1072 B/op	      33 allocs/op
+BenchmarkData/with_no_error_in_optional_for_TestInvopop-12           	  726202	      1658 ns/op	    1913 B/op	      41 allocs/op
+BenchmarkData/with_no_error_in_optional_for_TestParallelLazy-12      	  348286	      3317 ns/op	    1537 B/op	      43 allocs/op
+BenchmarkData/with_err_in_setIfOptSet_for_TestParallelLazy-12        	  347270	      3483 ns/op	    1714 B/op	      47 allocs/op
+BenchmarkData/with_err_in_setIfOptSet_for_TestValidator-12           	  958428	      1290 ns/op	    1232 B/op	      37 allocs/op
+BenchmarkData/with_err_in_setIfOptSet_for_TestLazyValidator-12       	  939782	      1326 ns/op	    1248 B/op	      37 allocs/op
+BenchmarkData/with_err_in_setIfOptSet_for_TestInvopop-12             	  574546	      2066 ns/op	    2353 B/op	      48 allocs/op
+BenchmarkData/with_error_in_extras_for_TestValidator-12              	 1000000	      1090 ns/op	    1056 B/op	      33 allocs/op
+BenchmarkData/with_error_in_extras_for_TestLazyValidator-12          	 1000000	      1107 ns/op	    1072 B/op	      33 allocs/op
+BenchmarkData/with_error_in_extras_for_TestInvopop-12                	  570960	      2037 ns/op	    2329 B/op	      48 allocs/op
+BenchmarkData/with_error_in_extras_for_TestParallelLazy-12           	  361460	      3362 ns/op	    1537 B/op	      43 allocs/op
+BenchmarkData/no_errors_for_TestInvopop-12                           	  742675	      1671 ns/op	    1913 B/op	      41 allocs/op
+BenchmarkData/no_errors_for_TestParallelLazy-12                      	  363316	      3303 ns/op	    1537 B/op	      43 allocs/op
+BenchmarkData/no_errors_for_TestValidator-12                         	 1000000	      1070 ns/op	    1056 B/op	      33 allocs/op
+BenchmarkData/no_errors_for_TestLazyValidator-12                     	 1000000	      1081 ns/op	    1072 B/op	      33 allocs/op
+BenchmarkData/with_error_in_code_for_TestLazyValidator-12            	  959569	      1241 ns/op	    1216 B/op	      36 allocs/op
+BenchmarkData/with_error_in_code_for_TestInvopop-12                  	  499682	      2063 ns/op	    2345 B/op	      48 allocs/op
+BenchmarkData/with_error_in_code_for_TestParallelLazy-12             	  342500	      3410 ns/op	    1682 B/op	      46 allocs/op
+BenchmarkData/with_error_in_code_for_TestValidator-12                	  959040	      1220 ns/op	    1200 B/op	      36 allocs/op
+BenchmarkData/with_error_in_message_for_TestLazyValidator-12         	  959401	      1244 ns/op	    1216 B/op	      36 allocs/op
+BenchmarkData/with_error_in_message_for_TestInvopop-12               	  571017	      2110 ns/op	    2393 B/op	      49 allocs/op
+BenchmarkData/with_error_in_message_for_TestParallelLazy-12          	  337357	      3440 ns/op	    1682 B/op	      46 allocs/op
+BenchmarkData/with_error_in_message_for_TestValidator-12             	  959062	      1221 ns/op	    1200 B/op	      36 allocs/op
+BenchmarkData/with_error_in_optional_for_TestInvopop-12              	  599444	      2058 ns/op	    2353 B/op	      48 allocs/op
+BenchmarkData/with_error_in_optional_for_TestParallelLazy-12         	  324042	      3492 ns/op	    1714 B/op	      47 allocs/op
+BenchmarkData/with_error_in_optional_for_TestValidator-12            	  888217	      1317 ns/op	    1232 B/op	      37 allocs/op
+BenchmarkData/with_error_in_optional_for_TestLazyValidator-12        	  799237	      1315 ns/op	    1248 B/op	      37 allocs/op
 PASS
-ok  	github.com/Jh123x/go-validate/validator	16.762s
+ok  	github.com/Jh123x/go-validate/validator	33.221s
 ```
 
 #### Formatted Results (ns/op)
 
-| No  | Test Case            | Input Value                                                                                   | Lazy Validator | Invopop    |
-| --- | -------------------- | --------------------------------------------------------------------------------------------- | -------------- | ---------- |
-| 1   | No Errors            | `Response{Code: 200,Message: "OK",Extras: map[string]any{}}`                                  | 1075 ns/op     | 1682 ns/op |
-| 2   | Error in Code        | `Response{Code: 0,Message: "OK",Extras: map[string]any{}}`                                    | 1231 ns/op     | 2064 ns/op |
-| 3   | Error in Msg         | `Response{Code: 200,Message: "",Extras: map[string]any{}}`                                    | 1229 ns/op     | 2127 ns/op |
-| 4   | Error in Extras      | `Response{Code: 200,Message: "OK",Extras: nil}`                                               | 1092 ns/op     | 2047 ns/op |
-| 5   | Error in Opt         | `Response{Code: 200,Message: "OK",Extras: map[string]any{},Optional: "test",SetIfOptSet: ""}` | 1284 ns/op     | 2049 ns/op |
-| 6   | No Error in Opt      | `Response{Code: 200,Message: "OK",Extras: map[string]any{},Optional: "",SetIfOptSet: ""}`     | 1074 ns/op     | 1666 ns/op |
-| 7   | Error in setIfOptSet | `Response{Code: 200,Message: "OK",Extras: map[string]any{},Optional: "",SetIfOptSet: "test"}` | 1300 ns/op     | 2112 ns/op |
+| No  | Test Case            | Input Value                                                                                   | Lazy Validator | Invopop    | Parallel Validator | Validator  |
+| --- | -------------------- | --------------------------------------------------------------------------------------------- | -------------- | ---------- | ------------------ | ---------- |
+| 1   | No Errors            | `Response{Code: 200,Message: "OK",Extras: map[string]any{}}`                                  | 1081 ns/op     | 1671 ns/op | 3303 ns/op         | 1070 ns/op |
+| 2   | Error in Code        | `Response{Code: 0,Message: "OK",Extras: map[string]any{}}`                                    | 1241 ns/op     | 2063 ns/op | 3410 ns/op         | 1220 ns/op |
+| 3   | Error in Msg         | `Response{Code: 200,Message: "",Extras: map[string]any{}}`                                    | 1244 ns/op     | 2110 ns/op | 3440 ns/op         | 1221 ns/op |
+| 4   | Error in Extras      | `Response{Code: 200,Message: "OK",Extras: nil}`                                               | 1107 ns/op     | 2037 ns/op | 3362 ns/op         | 1090 ns/op |
+| 5   | Error in Opt         | `Response{Code: 200,Message: "OK",Extras: map[string]any{},Optional: "test",SetIfOptSet: ""}` | 1315 ns/op     | 2058 ns/op | 3492 ns/op         | 1317 ns/op |
+| 6   | No Error in Opt      | `Response{Code: 200,Message: "OK",Extras: map[string]any{},Optional: "",SetIfOptSet: ""}`     | 1072 ns/op     | 1658 ns/op | 3317 ns/op         | 1139 ns/op |
+| 7   | Error in setIfOptSet | `Response{Code: 200,Message: "OK",Extras: map[string]any{},Optional: "",SetIfOptSet: "test"}` | 1326 ns/op     | 2066 ns/op | 3483 ns/op         | 1290 ns/op |
+
+For short validations such as this one, it seems that the parallel validator is slower than any of the other validators.
 
 ## Future tasks
 

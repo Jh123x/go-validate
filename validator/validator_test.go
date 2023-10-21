@@ -65,3 +65,14 @@ func TestValidator_ReadMeExample(t *testing.T) {
 	).Validate()
 	assert.Equal(t, fmt.Errorf("empty string"), err)
 }
+
+func TestValidator_ErrorInBetween(t *testing.T) {
+	validator := NewValidator()
+	err := validator.WithOptions(
+		options.IsNotEmpty("").WithError(fmt.Errorf("empty string")), // Fails and returns error.
+	).WithOptions(
+		options.IsLength([]string{}, 0, 3).WithError(fmt.Errorf("empty string")), // Will not be evaluated.
+		options.IsNotEmpty(""),
+	).Validate()
+	assert.Equal(t, fmt.Errorf("empty string"), err)
+}
