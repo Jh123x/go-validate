@@ -27,7 +27,7 @@ jobs:
     - name: Test
       run: go test -v ./... -coverprofile=./coverage.out
 
-    - name: check test coverage
+    - name: Coverage
       uses: vladopajic/go-test-coverage@v2
       with:
         # Configure action by specifying input parameters individually (option 2)

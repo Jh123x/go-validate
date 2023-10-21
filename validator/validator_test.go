@@ -38,6 +38,17 @@ func TestLazyValidator(t *testing.T) {
 	}
 }
 
+// TestNilLazyValidator tests the LazyValidator with nil.
+func TestNilLazyValidator(t *testing.T) {
+	val := (*LazyValidator)(nil)
+	t.Run("with options should return nil", func(t *testing.T) {
+		assert.Nil(t, val.WithOptions(validateWErr))
+	})
+	t.Run("Validate should return no error", func(t *testing.T) {
+		assert.Nil(t, val.Validate())
+	})
+}
+
 // TestLazyValidator_cache ensure that LazyValidator can be cached.
 func TestLazyValidator_Caching(t *testing.T) {
 	validator := NewLazyValidator()

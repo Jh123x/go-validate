@@ -8,22 +8,30 @@ import (
 
 func TestValidate_WithError(t *testing.T) {
 	tests := map[string]struct {
+		validate    Validate
 		withError   error
 		expectedErr error
 	}{
 		"WithError returns correct validate value with no error": {
+			validate:    validateWErr,
 			withError:   nil,
 			expectedErr: nil,
 		},
 		"WithError returns correct validate value with error": {
+			validate:    validateWErr,
 			withError:   errTest2,
 			expectedErr: errTest2,
+		},
+		"WithError returns no error withError": {
+			validate:    validateWNil,
+			withError:   errTest2,
+			expectedErr: nil,
 		},
 	}
 
 	for testName, testCase := range tests {
 		t.Run(testName, func(t *testing.T) {
-			validateFn := validateWErr.WithError(testCase.expectedErr)
+			validateFn := testCase.validate.WithError(testCase.expectedErr)
 			assert.Equal(t, testCase.expectedErr, validateFn())
 		})
 	}

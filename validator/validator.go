@@ -25,6 +25,9 @@ func (l *LazyValidator) WithOptions(opts ...ttypes.Validate) *LazyValidator {
 
 // Validate validates the options provided.
 func (l *LazyValidator) Validate() error {
+	if l == nil {
+		return nil
+	}
 	for _, opt := range l.options {
 		if err := opt(); err != nil {
 			return err
