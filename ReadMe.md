@@ -39,7 +39,7 @@ func main(){
 }
 ```
 
-## Benchmark (Needs improvement)
+## Benchmark
 
 ### Methodology
 
@@ -59,7 +59,9 @@ type Response struct {
 
 ### Validation logic
 
-Validation logic for this library is as follows.
+Validation logic for this librarys' validators is as follows.
+
+In this example we are using lazy validator but the logic is the same for all validators.
 
 ```go
 func validateResponseLazy(resp *Response) error {
@@ -164,17 +166,22 @@ ok  	github.com/Jh123x/go-validate/validator	33.221s
 
 #### Formatted Results (ns/op)
 
-| No  | Test Case            | Input Value                                                                                   | Lazy Validator | Invopop    | Parallel Validator | Validator  |
-| --- | -------------------- | --------------------------------------------------------------------------------------------- | -------------- | ---------- | ------------------ | ---------- |
-| 1   | No Errors            | `Response{Code: 200,Message: "OK",Extras: map[string]any{}}`                                  | 1081 ns/op     | 1671 ns/op | 3303 ns/op         | 1070 ns/op |
-| 2   | Error in Code        | `Response{Code: 0,Message: "OK",Extras: map[string]any{}}`                                    | 1241 ns/op     | 2063 ns/op | 3410 ns/op         | 1220 ns/op |
-| 3   | Error in Msg         | `Response{Code: 200,Message: "",Extras: map[string]any{}}`                                    | 1244 ns/op     | 2110 ns/op | 3440 ns/op         | 1221 ns/op |
-| 4   | Error in Extras      | `Response{Code: 200,Message: "OK",Extras: nil}`                                               | 1107 ns/op     | 2037 ns/op | 3362 ns/op         | 1090 ns/op |
-| 5   | Error in Opt         | `Response{Code: 200,Message: "OK",Extras: map[string]any{},Optional: "test",SetIfOptSet: ""}` | 1315 ns/op     | 2058 ns/op | 3492 ns/op         | 1317 ns/op |
-| 6   | No Error in Opt      | `Response{Code: 200,Message: "OK",Extras: map[string]any{},Optional: "",SetIfOptSet: ""}`     | 1072 ns/op     | 1658 ns/op | 3317 ns/op         | 1139 ns/op |
-| 7   | Error in setIfOptSet | `Response{Code: 200,Message: "OK",Extras: map[string]any{},Optional: "",SetIfOptSet: "test"}` | 1326 ns/op     | 2066 ns/op | 3483 ns/op         | 1290 ns/op |
+| No  | Test Case            | Input Value                                                                                   | Lazy Validator | Invopop    | Parallel Validator | Validator  | % improvement over Invopop |
+| --- | -------------------- | --------------------------------------------------------------------------------------------- | -------------- | ---------- | ------------------ | ---------- | -------------------------- |
+| 1   | No Errors            | `Response{Code: 200,Message: "OK",Extras: map[string]any{}}`                                  | 1081 ns/op     | 1671 ns/op | 3303 ns/op         | 1070 ns/op | 54.6%                      |
+| 2   | Error in Code        | `Response{Code: 0,Message: "OK",Extras: map[string]any{}}`                                    | 1241 ns/op     | 2063 ns/op | 3410 ns/op         | 1220 ns/op | 66.2%                      |
+| 3   | Error in Msg         | `Response{Code: 200,Message: "",Extras: map[string]any{}}`                                    | 1244 ns/op     | 2110 ns/op | 3440 ns/op         | 1221 ns/op | 69.6%                      |
+| 4   | Error in Extras      | `Response{Code: 200,Message: "OK",Extras: nil}`                                               | 1107 ns/op     | 2037 ns/op | 3362 ns/op         | 1090 ns/op | 65.0%                      |
+| 5   | Error in Opt         | `Response{Code: 200,Message: "OK",Extras: map[string]any{},Optional: "test",SetIfOptSet: ""}` | 1315 ns/op     | 2058 ns/op | 3492 ns/op         | 1317 ns/op | 56.5%                      |
+| 6   | No Error in Opt      | `Response{Code: 200,Message: "OK",Extras: map[string]any{},Optional: "",SetIfOptSet: ""}`     | 1072 ns/op     | 1658 ns/op | 3317 ns/op         | 1139 ns/op | 100%                       |
+| 7   | Error in setIfOptSet | `Response{Code: 200,Message: "OK",Extras: map[string]any{},Optional: "",SetIfOptSet: "test"}` | 1326 ns/op     | 2066 ns/op | 3483 ns/op         | 1290 ns/op | 68.5%                      |
 
 For short validations such as this one, it seems that the parallel validator is slower than any of the other validators.
+
+#### Results
+
+In general, the lazy validator is faster than the [Invopop](https://github.com/invopop/validation "validation") validator by a significant margin.
+The lazy validator is also faster than the parallel validator in most cases unless there are a large number of validations to be done.
 
 ## Future tasks
 
