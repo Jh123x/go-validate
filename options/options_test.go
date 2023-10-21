@@ -133,3 +133,114 @@ func TestIsLength(t *testing.T) {
 		})
 	}
 }
+
+// TestOr tests if the Or function works as expected.
+func TestOr(t *testing.T) {
+	tests := map[string]struct {
+		options     []ttypes.Validate
+		expectedErr error
+	}{
+		"all options are valid": {
+			options: []ttypes.Validate{
+				func() error { return nil },
+				func() error { return nil },
+				func() error { return nil },
+			},
+			expectedErr: nil,
+		},
+		"one option is valid": {
+			options: []ttypes.Validate{
+				func() error { return errs.OrError },
+				func() error { return nil },
+				func() error { return errs.OrError },
+			},
+			expectedErr: nil,
+		},
+		"no options are valid": {
+			options: []ttypes.Validate{
+				func() error { return errs.IsNotEmptyErr },
+				func() error { return errs.IsEmptyError },
+				func() error { return errs.InvalidLengthError },
+			},
+			expectedErr: errs.OrError,
+		},
+	}
+
+	for testName, testCase := range tests {
+		t.Run(testName, func(t *testing.T) {
+			validateOr := Or(testCase.options...)
+			assert.Equal(t, testCase.expectedErr, validateOr())
+		})
+	}
+}
+
+// TestAnd tests if the Or function works as expected.
+func TestAnd(t *testing.T) {
+	tests := map[string]struct {
+		options     []ttypes.Validate
+		expectedErr error
+	}{
+		"all options are valid": {
+			options: []ttypes.Validate{
+				func() error { return nil },
+				func() error { return nil },
+				func() error { return nil },
+			},
+			expectedErr: nil,
+		},
+		"one option is valid": {
+			options: []ttypes.Validate{
+				func() error { return errs.OrError },
+				func() error { return nil },
+				func() error { return errs.OrError },
+			},
+			expectedErr: errs.OrError,
+		},
+		"no options are valid": {
+			options: []ttypes.Validate{
+				func() error { return errs.IsNotEmptyErr },
+				func() error { return errs.IsEmptyError },
+				func() error { return errs.InvalidLengthError },
+			},
+			expectedErr: errs.IsNotEmptyErr,
+		},
+	}
+
+	for testName, testCase := range tests {
+		t.Run(testName, func(t *testing.T) {
+			validateOr := And(testCase.options...)
+			assert.Equal(t, testCase.expectedErr, validateOr())
+		})
+	}
+}
+
+func TestContains(t *testing.T) {
+	tests := map[string]struct {
+		arr         []any
+		elem        any
+		expectedErr error
+	}{
+		"array contains element": {
+			arr:         testArr,
+			elem:        testArr[2],
+			expectedErr: nil,
+		},
+		"array does not contain element": {
+			arr:         testArr,
+			elem:        4,
+			expectedErr: errs.ContainsError,
+		},
+		"empty array": {
+			arr:         []any{},
+			elem:        4,
+			expectedErr: errs.ContainsError,
+		},
+	}
+
+	for testName, testCase := range tests {
+		t.Run(testName, func(t *testing.T) {
+			validateFn := Contains(testCase.arr, testCase.elem)
+			assert.Equal(t, testCase.expectedErr, validateFn())
+		})
+	}
+}

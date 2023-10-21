@@ -8,4 +8,6 @@ var (
 	IsEmptyError       = NewValidateError("IsEmpty", "value is not empty")
 	IsNotEmptyErr      = NewValidateError("IsNotEmpty", "value is empty")
 	InvalidLengthError = NewValidateError("IsLength", "invalid length")
+	OrError            = NewValidateError("Or", "no options passed")
+	ContainsError      = NewValidateError("Contains", "value not found in array")
 )
