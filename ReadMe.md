@@ -16,6 +16,12 @@ Please create an issue if you have any:
 3. Define your own validation method
 4. Fast
 
+## Installation
+
+```sh
+go get github.com/Jh123x/go-validate
+```
+
 ## Example
 
 ```go
