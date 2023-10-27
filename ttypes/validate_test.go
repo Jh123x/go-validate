@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TestWithRequire tests the WithRequire function.
 func TestValidate_WithError(t *testing.T) {
 	tests := map[string]struct {
 		validate    Validate
@@ -37,6 +38,7 @@ func TestValidate_WithError(t *testing.T) {
 	}
 }
 
+// TestIsEmpty tests the IsNotEmpty function.
 func TestValidate_Not(t *testing.T) {
 	tests := map[string]struct {
 		validate    Validate

@@ -31,6 +31,7 @@ func IsLength[T any](arr []T, start, end int) types.Validate {
 	return WithRequire(func() bool { return len(arr) >= start && len(arr) <= end }, errs.InvalidLengthError)
 }
 
+// Contains validates that the provided array contains the provided element.
 func Contains[T comparable](arr []T, elem T) types.Validate {
 	return WithRequire(func() bool {
 		for _, v := range arr {

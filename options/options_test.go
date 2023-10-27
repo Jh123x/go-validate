@@ -214,6 +214,7 @@ func TestAnd(t *testing.T) {
 	}
 }
 
+// TestContains tests if the Contains function works as expected.
 func TestContains(t *testing.T) {
 	tests := map[string]struct {
 		arr         []any

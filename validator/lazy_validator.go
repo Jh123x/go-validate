@@ -2,6 +2,7 @@ package validator
 
 import "github.com/Jh123x/go-validate/ttypes"
 
+// LazyValidator is a validator that lazily evaluates the options provided.
 type LazyValidator struct {
 	options []ttypes.Validate
 }
