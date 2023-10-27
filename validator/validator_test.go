@@ -66,6 +66,7 @@ func TestValidator_ReadMeExample(t *testing.T) {
 	assert.Equal(t, fmt.Errorf("empty string"), err)
 }
 
+// TestLazyValidator_ErrorInBetween tests that errors in between options are returned.
 func TestValidator_ErrorInBetween(t *testing.T) {
 	validator := NewValidator()
 	err := validator.WithOptions(

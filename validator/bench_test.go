@@ -20,6 +20,7 @@ type Response struct {
 
 type testFn func(*Response) error
 
+// benchmarkValidator benchmarks the validateFn.
 func benchmarkValidator(b *testing.B, response *Response, validateFn testFn, hasErr bool) {
 	for i := 0; i < b.N; i++ {
 		err := validateFn(response)
@@ -27,6 +28,7 @@ func benchmarkValidator(b *testing.B, response *Response, validateFn testFn, has
 	}
 }
 
+// validateResponseLazy is a benchmark for the Lazy Evaluator.
 func validateResponseLazy(resp *Response) error {
 	return NewLazyValidator().WithOptions(
 		options.IsNotEmpty(resp.Code),
@@ -45,6 +47,7 @@ func validateResponseLazy(resp *Response) error {
 	).Validate()
 }
 
+// validateResponseParallelLazy is a benchmark for the Parallel Lazy Evaluator.
 func validateResponseParallelLazy(resp *Response) error {
 	return NewParallelLazyValidator().WithOptions(
 		options.IsNotEmpty(resp.Code),
@@ -63,6 +66,7 @@ func validateResponseParallelLazy(resp *Response) error {
 	).Validate()
 }
 
+// validateResponseInvopop is a benchmark for the Invopop Validation Library.
 func validateResponseInvopop(resp *Response) error {
 	return validation.ValidateStruct(
 		resp,
@@ -81,6 +85,7 @@ func validateResponseInvopop(resp *Response) error {
 	)
 }
 
+// validateResponseValidator is a benchmark for the normal Validator.
 func validateResponseValidator(resp *Response) error {
 	return NewValidator().WithOptions(
 		options.IsNotEmpty(resp.Code),
@@ -99,6 +104,7 @@ func validateResponseValidator(resp *Response) error {
 	).Validate()
 }
 
+// BenchmarkData benchmarks the different validators.
 func BenchmarkData(b *testing.B) {
 	algorithms := map[string]testFn{
 		"TestLazyValidator": validateResponseLazy,
