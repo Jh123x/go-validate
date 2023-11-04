@@ -87,7 +87,6 @@ func validateResponseLazy(resp *Response) error {
 		),
 	).Validate()
 }
-
 ```
 
 Validation logic for the [~~Ozzo~~](https://github.com/go-ozzo/ozzo-validation/ "ozzo") [Invopop](https://github.com/invopop/validation "validation") library is as follows.
@@ -151,13 +150,13 @@ This is running on go version 1.21.3 windows/amd64. The results may vary on diff
 
 #### Terms
 
-| Term    | Meaning                                                                                         |
-| ------- | ----------------------------------------------------------------------------------------------- |
-| ns      | Nanoseconds                                                                                     |
-| op      | Number of times the function is called                                                          |
-| ns / op | Nanoseconds per operation. This is the average time taken for each operation. (Lower is better) |
-| allocs  | Number of memory allocations. (Lower is better)                                                 |
-| B / op  | Bytes per operation. This is the average memory allocated for each operation. (Lower is better) |
+| Term      | Meaning                                                                                         |
+| --------- | ----------------------------------------------------------------------------------------------- |
+| `ns`      | Nanoseconds                                                                                     |
+| `op`      | Number of times the function is called                                                          |
+| `ns/op` | Nanoseconds per operation. This is the average time taken for each operation. (Lower is better) |
+| `allocs`  | Number of memory allocations. (Lower is better)                                                 |
+| `B/op`  | Bytes per operation. This is the average memory allocated for each operation. (Lower is better) |
 
 #### Raw Benchmark results
 
