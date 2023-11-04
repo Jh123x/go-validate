@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/Jh123x/go-validate/errs"
 	"github.com/Jh123x/go-validate/options"
 	"github.com/invopop/validation"
 	"github.com/stretchr/testify/assert"
@@ -14,8 +15,8 @@ type Response struct {
 	Code        int            // Must be non-zero.
 	Message     string         // Must be non-empty.
 	Extras      map[string]any // Must be non-nil.
-	Optional    string         // Optional
-	SetIfOptSet string         // Set if Optional is set
+	Optional    string         // Optional.
+	SetIfOptSet string         // Set if Optional is set, empty otherwise.
 }
 
 type testFn func(*Response) error
@@ -66,6 +67,30 @@ func validateResponseParallelLazy(resp *Response) error {
 	).Validate()
 }
 
+// validateIfImplementation is a benchmark for just pure if statements.
+func validateIfImplementation(resp *Response) error {
+	if resp.Code == 0 {
+		return errs.IsEmptyError
+	}
+
+	if len(resp.Message) == 0 {
+		return errs.IsEmptyError
+	}
+
+	if resp.Extras == nil {
+		return errs.IsEmptyError
+	}
+
+	if len(resp.Optional) > 0 && len(resp.SetIfOptSet) == 0 {
+		return errs.IsEmptyError
+	}
+
+	if len(resp.Optional) == 0 && len(resp.SetIfOptSet) > 0 {
+		return errs.IsEmptyError
+	}
+	return nil
+}
+
 // validateResponseInvopop is a benchmark for the Invopop Validation Library.
 func validateResponseInvopop(resp *Response) error {
 	return validation.ValidateStruct(
@@ -111,12 +136,13 @@ func BenchmarkData(b *testing.B) {
 		"TestInvopop":       validateResponseInvopop,
 		"TestParallelLazy":  validateResponseParallelLazy,
 		"TestValidator":     validateResponseValidator,
+		"TestIfStmts":       validateIfImplementation,
 	}
 	tests := map[string]struct {
 		resp   Response
 		hasErr bool
 	}{
-		"no errors": {
+		"no err": {
 			resp: Response{
 				Code:    200,
 				Message: "OK",
@@ -124,7 +150,7 @@ func BenchmarkData(b *testing.B) {
 			},
 			hasErr: false,
 		},
-		"with error in code": {
+		"err in code": {
 			resp: Response{
 				Code:    0,
 				Message: "OK",
@@ -132,7 +158,7 @@ func BenchmarkData(b *testing.B) {
 			},
 			hasErr: true,
 		},
-		"with error in message": {
+		"err in message": {
 			resp: Response{
 				Code:    200,
 				Message: "",
@@ -140,7 +166,7 @@ func BenchmarkData(b *testing.B) {
 			},
 			hasErr: true,
 		},
-		"with error in extras": {
+		"err in extras": {
 			resp: Response{
 				Code:    200,
 				Message: "OK",
@@ -148,7 +174,7 @@ func BenchmarkData(b *testing.B) {
 			},
 			hasErr: true,
 		},
-		"with error in optional": {
+		"err in optional": {
 			resp: Response{
 				Code:        200,
 				Message:     "OK",
@@ -158,7 +184,7 @@ func BenchmarkData(b *testing.B) {
 			},
 			hasErr: true,
 		},
-		"with no error in optional": {
+		"no err in optional": {
 			resp: Response{
 				Code:        200,
 				Message:     "OK",
@@ -168,7 +194,7 @@ func BenchmarkData(b *testing.B) {
 			},
 			hasErr: false,
 		},
-		"with err in setIfOptSet": {
+		"err in setIfOptSet": {
 			resp: Response{
 				Code:        200,
 				Message:     "OK",
