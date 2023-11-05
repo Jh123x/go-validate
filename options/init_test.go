@@ -6,5 +6,5 @@ import (
 
 var (
 	errTest = fmt.Errorf("test error")
-	testArr = []any{1, 2, 3}
+	testArr = []int{1, 2, 3}
 )
