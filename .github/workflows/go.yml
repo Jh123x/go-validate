@@ -36,3 +36,13 @@ jobs:
         threshold-file: 80
         threshold-package: 80
         threshold-total: 95
+  
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Release
+        uses: codfish/semantic-release-action@v2.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
