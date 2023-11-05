@@ -1,5 +1,7 @@
 # Go Validate
 
+![CI Badge](https://github.com/Jh123x/go-validate/actions/workflows/go.yml/badge.svg "CI Badge")
+
 A mini validation library in Pure Go.
 
 Please create an issue if you have any:
