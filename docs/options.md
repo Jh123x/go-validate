@@ -47,12 +47,14 @@ validator.WithOptions(
 ).Validate()
 ```
 
-## IsEmpty
+## Basic Options
+
+### IsEmpty
 
 The opposite of [`IsNotEmpty`](#isnotempty).
 Takes in any value and returns `errs.IsEmptyErr` if the value is not default/empty.
 
-### Usage
+#### Usage
 
 ```go
 // Returns error
@@ -66,12 +68,12 @@ validator.WithOptions(
 ).Validate()
 ```
 
-## IsLength
+### IsLength
 
 Takes in an array of any type, the start length and the end length (Both inclusive).
 Returns `errs.IsLengthErr` if the length of the value is not within the specified range.
 
-### Usage
+#### Usage
 
 ```go
 // Returns error
@@ -85,11 +87,11 @@ validator.WithOptions(
 ).Validate()
 ```
 
-## Contains
+### Contains
 
 Takes in an array of any type and a value. Returns `errs.ContainsErr` if the value is not in the array.
 
-### Usage
+#### Usage
 
 ```go
 // No error
@@ -103,7 +105,29 @@ validator.WithOptions(
 ).Validate()
 ```
 
-## Or
+## String Operations
+
+### IsValidURI
+
+Takes in a string and returns `errs.IsValidURLErr` if the string is not a valid URL.
+
+#### Usage
+
+```go
+// No error
+validator.WithOptions(
+    options.IsValidURI("https://github.com/Jh123x/go-validate"),
+).Validate()
+
+// returns error
+validator.WithOptions(
+    options.IsValidURI("invalid url"),
+).Validate()
+```
+
+## Option Composition
+
+### Or
 
 This is a special option that takes in multiple options and returns nil if any of the options returns nil, otherwise, it returns an `errs.OrError` if all of the options return an error.
 You can use this in conjunction with [`And`](#and) to create complex validation rules.
@@ -126,7 +150,7 @@ validator.WithOptions(
 ).Validate()
 ```
 
-## And
+### And
 
 This is a special option that takes in multiple options and returns an error if any of the option errors.
 You can use this in conjunction with [`Or`](#or) to create complex validation rules.
@@ -149,12 +173,14 @@ validator.WithOptions(
 ).Validate()
 ```
 
-## WithRequire
+## Custom Options
+
+### WithRequire
 
 If the above options are not enough for you, you can use `WithRequire` to define your own validation method.
 It takes in a [`Test`](../ttypes/types.go) type (`func() bool`) and a `error` type as parameters. If the function returns `true`, `WithRequire` will return nil, otherwise it will return the error.
 
-### Usage
+#### Usage
 
 ```go
 // My Custom Function
