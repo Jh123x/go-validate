@@ -7,10 +7,10 @@ import (
 	types "github.com/Jh123x/go-validate/ttypes"
 )
 
-// IsValidURL validates that the provided string is a valid URL.
-func IsValidURL(urlStr string) types.Validate {
+// IsValidURI validates that the provided string is a valid URL.
+func IsValidURI(uriStr string) types.Validate {
 	return WithRequire(func() bool {
-		_, err := url.ParseRequestURI(urlStr)
+		_, err := url.ParseRequestURI(uriStr)
 		return err == nil
-	}, errs.InvalidURLError)
+	}, errs.InvalidURIError)
 }

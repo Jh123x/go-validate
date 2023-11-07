@@ -7,13 +7,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIsValidURL(t *testing.T) {
+func TestIsValidURI(t *testing.T) {
 	tests := map[string]struct {
 		url         string
 		expectedErr error
 	}{
 		"valid url with https scheme": {
-			url:         "https://www.google.com",
+			url:         "https://github.com/Jh123x/go-validate",
 			expectedErr: nil,
 		},
 		"valid url with http scheme": {
@@ -22,21 +22,21 @@ func TestIsValidURL(t *testing.T) {
 		},
 		"invalid url no scheme": {
 			url:         "www.google.com",
-			expectedErr: errs.InvalidURLError,
+			expectedErr: errs.InvalidURIError,
 		},
 		"invalid url no colon": {
 			url:         "http//www.google.com",
-			expectedErr: errs.InvalidURLError,
+			expectedErr: errs.InvalidURIError,
 		},
 		"invalid only scheme": {
 			url:         "http",
-			expectedErr: errs.InvalidURLError,
+			expectedErr: errs.InvalidURIError,
 		},
 	}
 
 	for name, testCase := range tests {
 		t.Run(name, func(t *testing.T) {
-			assert.Equal(t, testCase.expectedErr, IsValidURL(testCase.url)())
+			assert.Equal(t, testCase.expectedErr, IsValidURI(testCase.url)())
 		})
 	}
 }

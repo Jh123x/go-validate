@@ -10,5 +10,5 @@ var (
 	InvalidLengthError = NewValidateError("IsLength", "invalid length")
 	OrError            = NewValidateError("Or", "no options passed")
 	ContainsError      = NewValidateError("Contains", "value not found in array")
-	InvalidURLError    = NewValidateError("IsValidURL", "invalid url")
+	InvalidURIError    = NewValidateError("IsValidURL", "invalid url")
 )
