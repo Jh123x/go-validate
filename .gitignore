@@ -25,3 +25,7 @@ go.work
 
 # ignore test script
 test.sh
+
+# ignore ide data
+.vscode
+.test
