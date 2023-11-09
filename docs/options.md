@@ -127,9 +127,9 @@ validator.WithOptions(
 
 ### IsValidJson
 
-Takes in a string and returns `errs.InvalidJsonError`
+Takes in a string and returns `errs.InvalidJsonError` if the string is not a valid JSON.
 
-### Usage
+#### Usage
 
 ```go
 // No error
@@ -140,6 +140,24 @@ validator.WithOptions(
 // returns error
 validator.WithOptions(
     options.IsValidJson(`{"name":"jh123x"`),
+).Validate()
+```
+
+### IsValidEmail
+
+Takes in a string and returns `errs.IsValidEmailErr` if the string is not a valid email.
+
+#### Usage
+
+```go
+// No error
+validator.WithOptions(
+    options.IsValidEmail("test@test.com"),
+).Validate()
+
+// returns error
+validator.WithOptions(
+    options.IsValidEmail("test.com"),
 ).Validate()
 ```
 

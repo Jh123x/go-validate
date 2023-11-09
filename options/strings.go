@@ -22,3 +22,10 @@ func IsValidJson(jsonStr string) types.Validate {
 		return json.Valid([]byte(jsonStr))
 	}, errs.InvalidJsonError)
 }
+
+// IsValidEmail validates the provided string is a valid email address.
+func IsValidEmail(email string) types.Validate {
+	return WithRequire(func() bool {
+		return emailRegex.MatchString(email)
+	}, errs.InvalidEmailError)
+}
