@@ -40,3 +40,41 @@ func TestIsValidURI(t *testing.T) {
 		})
 	}
 }
+
+func TestIsValidJson(t *testing.T) {
+	tests := map[string]struct {
+		url         string
+		expectedErr error
+	}{
+		"valid json": {
+			url:         `{"name":"jh123x"}`,
+			expectedErr: nil,
+		},
+		"valid empty arr": {
+			url:         `[]`,
+			expectedErr: nil,
+		},
+		"valid empty obj": {
+			url:         `{}`,
+			expectedErr: nil,
+		},
+		"invalid json": {
+			url:         `{"name":"jh123x"`,
+			expectedErr: errs.InvalidJsonError,
+		},
+		"empty json string": {
+			url:         ``,
+			expectedErr: errs.InvalidJsonError,
+		},
+		"invalid arr": {
+			url:         `[1,2,3`,
+			expectedErr: errs.InvalidJsonError,
+		},
+	}
+
+	for name, testCase := range tests {
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, testCase.expectedErr, IsValidJson(testCase.url)())
+		})
+	}
+}

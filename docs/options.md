@@ -125,6 +125,24 @@ validator.WithOptions(
 ).Validate()
 ```
 
+### IsValidJson
+
+Takes in a string and returns `errs.InvalidJsonError`
+
+### Usage
+
+```go
+// No error
+validator.WithOptions(
+    options.IsValidJson(`{"name":"jh123x"}`),
+).Validate()
+
+// returns error
+validator.WithOptions(
+    options.IsValidJson(`{"name":"jh123x"`),
+).Validate()
+```
+
 ## Option Composition
 
 ### Or
