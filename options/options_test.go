@@ -89,7 +89,7 @@ func TestIsNotEmpty_string(t *testing.T) {
 // TestIsLength test if the IsLength function works as expected.
 func TestIsLength(t *testing.T) {
 	tests := map[string]struct {
-		arr         []any
+		arr         []int
 		start       int
 		end         int
 		expectedErr error
@@ -217,8 +217,8 @@ func TestAnd(t *testing.T) {
 // TestContains tests if the Contains function works as expected.
 func TestContains(t *testing.T) {
 	tests := map[string]struct {
-		arr         []any
-		elem        any
+		arr         []int
+		elem        int
 		expectedErr error
 	}{
 		"array contains element": {
@@ -232,7 +232,7 @@ func TestContains(t *testing.T) {
 			expectedErr: errs.ContainsError,
 		},
 		"empty array": {
-			arr:         []any{},
+			arr:         []int{},
 			elem:        4,
 			expectedErr: errs.ContainsError,
 		},
