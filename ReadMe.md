@@ -53,6 +53,16 @@ Please create an issue if you have any:
 3. Find any bugs
 4. Want to point out any mistakes
 
+## Contribution Guide
+
+1. Code a new feature or fix a bug.
+2. Add tests for the new feature or the bug you fixed.
+3. Fill up the [pull request template](.github/pull_request_template.md).
+4. Create a pull request.
+5. Wait for the CI to pass.
+6. Wait for the maintainer to review your code.
+7. Wait for the maintainer to merge your code.
+
 ## Future tasks
 
 - [ ] Add other types of validators for different use cases.
