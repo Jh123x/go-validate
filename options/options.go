@@ -44,7 +44,7 @@ func Contains[T comparable](arr []T, elem T) types.Validate {
 }
 
 // Or validates that at least one of the provided options is valid.
-// If none of the options are valid, then Or returns a errs.Orerror.
+// If none of the options are valid, then Or returns a errs.OrError.
 func Or(options ...types.Validate) types.Validate {
 	return func() error {
 		for _, option := range options {

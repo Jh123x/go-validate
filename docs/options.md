@@ -29,11 +29,13 @@ func main(){
 }
 ```
 
-## IsNotEmpty
+## Basic Options
+
+### IsNotEmpty
 
 Takes in any value and returns `errs.IsNotEmptyErr` if the value is empty.
 
-### Usage
+#### Usage
 
 ```go
 // Returns error
@@ -46,8 +48,6 @@ validator.WithOptions(
     options.IsNotEmpty("not empty"), // Returns error
 ).Validate()
 ```
-
-## Basic Options
 
 ### IsEmpty
 
