@@ -167,6 +167,7 @@ func TestOr(t *testing.T) {
 		"nil options will be skipped": {
 			options: []ttypes.Validate{
 				nil,
+				func() error { return nil },
 			},
 			expectedErr: nil,
 		},
@@ -213,6 +214,7 @@ func TestAnd(t *testing.T) {
 		"nil options will be skipped": {
 			options: []ttypes.Validate{
 				nil,
+				func() error { return nil },
 			},
 			expectedErr: nil,
 		},
