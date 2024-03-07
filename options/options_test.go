@@ -164,6 +164,13 @@ func TestOr(t *testing.T) {
 			},
 			expectedErr: errs.OrError,
 		},
+		"nil options will be skipped": {
+			options: []ttypes.Validate{
+				nil,
+				func() error { return nil },
+			},
+			expectedErr: nil,
+		},
 	}
 
 	for testName, testCase := range tests {
@@ -203,6 +210,13 @@ func TestAnd(t *testing.T) {
 				func() error { return errs.InvalidLengthError },
 			},
 			expectedErr: errs.IsNotEmptyErr,
+		},
+		"nil options will be skipped": {
+			options: []ttypes.Validate{
+				nil,
+				func() error { return nil },
+			},
+			expectedErr: nil,
 		},
 	}
 

@@ -48,6 +48,9 @@ func Contains[T comparable](arr []T, elem T) types.Validate {
 func Or(options ...types.Validate) types.Validate {
 	return func() error {
 		for _, option := range options {
+			if option == nil {
+				continue
+			}
 			if err := option(); err == nil {
 				return nil
 			}
@@ -61,6 +64,9 @@ func Or(options ...types.Validate) types.Validate {
 func And(options ...types.Validate) types.Validate {
 	return func() error {
 		for _, option := range options {
+			if option == nil {
+				continue
+			}
 			if err := option(); err != nil {
 				return err
 			}
