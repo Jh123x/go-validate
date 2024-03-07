@@ -1,10 +1,13 @@
 package validator
 
-import "github.com/Jh123x/go-validate/ttypes"
+import (
+	"github.com/Jh123x/go-validate/options"
+	"github.com/Jh123x/go-validate/ttypes"
+)
 
 // LazyValidator is a validator that lazily evaluates the options provided.
 type LazyValidator struct {
-	options []ttypes.Validate
+	options ttypes.Validate
 }
 
 var _ ttypes.Validator[LazyValidator] = (*LazyValidator)(nil)
@@ -20,19 +23,14 @@ func (l *LazyValidator) WithOptions(opts ...ttypes.Validate) *LazyValidator {
 		return nil
 	}
 	newValidator := *l
-	newValidator.options = append(l.options, opts...)
+	newValidator.options = options.And(l.options, options.And(opts...))
 	return &newValidator
 }
 
 // Validate validates the options provided.
 func (l *LazyValidator) Validate() error {
-	if l == nil {
+	if l == nil || l.options == nil {
 		return nil
 	}
-	for _, opt := range l.options {
-		if err := opt(); err != nil {
-			return err
-		}
-	}
-	return nil
+	return l.options()
 }
