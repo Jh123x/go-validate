@@ -12,14 +12,16 @@ type ValueValidator[T any] struct {
 }
 
 func NewValueWrapper[T any]() *ValueValidator[T] {
-	return &ValueValidator[T]{}
+	return &ValueValidator[T]{
+		option: options.VWithRequire[T](func(T) bool { return true }, nil),
+	}
 }
 
 func (v *ValueValidator[T]) WithOptions(valOptions ...ttypes.ValTest[T]) *ValueValidator[T] {
 	if v == (*ValueValidator[T])(nil) {
 		return nil
 	}
-	v.option = options.VAnd[T](v.option, options.VAnd(valOptions...))
+	v.option = options.VAnd(v.option, options.VAnd(valOptions...))
 	return v
 }
 
