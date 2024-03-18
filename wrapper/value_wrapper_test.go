@@ -106,6 +106,51 @@ func TestOptionCompatibility_ArrValues(t *testing.T) {
 			options:             options.VContains(4),
 			expectedValidateErr: errs.ContainsError,
 		},
+		"and success": {
+			value: []int{1, 2, 3},
+			options: options.VAnd(
+				options.VIsLength[int](1, 3),
+				options.VContains(1),
+			),
+		},
+		"and fail when 1 fails": {
+			value: []int{1, 2, 3},
+			options: options.VAnd(
+				options.VIsLength[int](2, 3), // Success
+				options.VContains(4),         // Fail
+			),
+			expectedValidateErr: errs.ContainsError,
+		},
+		"and fail when all fails": {
+			value: []int{1, 2, 3},
+			options: options.VAnd(
+				options.VIsLength[int](4, 5), // Fail
+				options.VContains(4),         // Fail
+			),
+			expectedValidateErr: errs.InvalidLengthError,
+		},
+		"or success": {
+			value: []int{1, 2, 3},
+			options: options.VOr(
+				options.VIsLength[int](4, 5), // Fail
+				options.VContains(1),         // Success
+			),
+		},
+		"or success when all success": {
+			value: []int{1, 2, 3, 4, 5},
+			options: options.VOr(
+				options.VIsLength[int](4, 5), // Success
+				options.VContains(4),         // Success
+			),
+		},
+		"or fail": {
+			value: []int{1, 2, 3},
+			options: options.VOr(
+				options.VIsLength[int](4, 5), // Fail
+				options.VContains(4),         // Fail
+			),
+			expectedValidateErr: errs.OrError,
+		},
 	}
 
 	for name, tc := range tests {
