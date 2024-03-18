@@ -30,30 +30,24 @@ func IsValidEmail(email string) types.Validate {
 	}, errs.InvalidEmailError)
 }
 
-func VIsValidURI(uriStr string) types.ValTest[string] {
-	return func(uriStr string) error {
-		_, err := url.ParseRequestURI(uriStr)
-		if err != nil {
-			return errs.InvalidURIError
-		}
-		return nil
+func VIsValidURI(uriStr string) error {
+	_, err := url.ParseRequestURI(uriStr)
+	if err != nil {
+		return errs.InvalidURIError
 	}
+	return nil
 }
 
-func VIsValidJson(jsonStr string) types.ValTest[string] {
-	return func(jsonStr string) error {
-		if !json.Valid([]byte(jsonStr)) {
-			return errs.InvalidJsonError
-		}
-		return nil
+func VIsValidJson(jsonStr string) error {
+	if !json.Valid([]byte(jsonStr)) {
+		return errs.InvalidJsonError
 	}
+	return nil
 }
 
-func VIsValidEmail(email string) types.ValTest[string] {
-	return func(email string) error {
-		if !emailRegex.MatchString(email) {
-			return errs.InvalidEmailError
-		}
-		return nil
+func VIsValidEmail(email string) error {
+	if !emailRegex.MatchString(email) {
+		return errs.InvalidEmailError
 	}
+	return nil
 }
