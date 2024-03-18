@@ -14,24 +14,39 @@ func VWithRequire[T any](t ttypes.VTest[T], err error) ttypes.ValTest[T] {
 	}
 }
 
-func VIsNotEmpty[T comparable]() ttypes.ValTest[T] {
+func VIsNotDefault[T comparable]() ttypes.ValTest[T] {
 	var defaultVal T
 	return func(t T) error {
 		if defaultVal == t {
-			return errs.IsNotEmptyErr
+			return errs.IsNotDefaultErr
 		}
 		return nil
 	}
 }
 
-func VIsEmpty[T comparable]() ttypes.ValTest[T] {
+func VIsDefault[T comparable]() ttypes.ValTest[T] {
 	var defaultVal T
 	return func(val T) error {
 		if defaultVal != val {
-			return errs.IsEmptyError
+			return errs.IsDefaultErr
 		}
 		return nil
 	}
+}
+
+func VIsEmpty[T any](val []T) error {
+	if len(val) == 0 {
+		return nil
+	}
+	return errs.IsEmptyError
+}
+
+func VIsNotEmpty[T any](val []T) error {
+	if len(val) != 0 {
+		return nil
+	}
+	return errs.IsNotEmptyErr
+
 }
 
 func VIsLength[T any](minLen, maxLen int) ttypes.ValTest[[]T] {
