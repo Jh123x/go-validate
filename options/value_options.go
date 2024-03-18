@@ -14,17 +14,23 @@ func VWithRequire[T any](t ttypes.VTest[T], err error) ttypes.ValTest[T] {
 	}
 }
 
-func VIsNotEmpty[T comparable]() ttypes.VTest[T] {
+func VIsNotEmpty[T comparable]() ttypes.ValTest[T] {
 	var defaultVal T
-	return func(t T) bool {
-		return defaultVal != t
+	return func(t T) error {
+		if defaultVal == t {
+			return errs.IsNotEmptyErr
+		}
+		return nil
 	}
 }
 
-func VIsEmpty[T comparable]() ttypes.VTest[T] {
+func VIsEmpty[T comparable]() ttypes.ValTest[T] {
 	var defaultVal T
-	return func(val T) bool {
-		return defaultVal == val
+	return func(val T) error {
+		if defaultVal != val {
+			return errs.IsEmptyError
+		}
+		return nil
 	}
 }
 

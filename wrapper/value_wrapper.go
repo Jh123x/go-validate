@@ -14,6 +14,9 @@ func NewValueWrapper[T any](value T) *ValueValidator[T] {
 }
 
 func (v *ValueValidator[T]) WithOptions(options ...ttypes.ValTest[T]) *ValueValidator[T] {
+	if v == nil {
+		return nil
+	}
 	if v.err != nil {
 		return v
 	}
@@ -27,9 +30,15 @@ func (v *ValueValidator[T]) WithOptions(options ...ttypes.ValTest[T]) *ValueVali
 }
 
 func (v *ValueValidator[T]) Validate() error {
+	if v == nil {
+		return nil
+	}
 	return v.err
 }
 
 func (v *ValueValidator[T]) ToOption() ttypes.Validate {
+	if v == nil {
+		return nil
+	}
 	return func() error { return v.err }
 }
