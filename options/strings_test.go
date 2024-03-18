@@ -112,3 +112,93 @@ func TestIsValidEmail(t *testing.T) {
 		})
 	}
 }
+
+func TestVIsValidURI(t *testing.T) {
+	tests := map[string]struct {
+		url         string
+		expectedErr error
+	}{
+		"valid url with https scheme": {
+			url:         "https://google.com",
+			expectedErr: nil,
+		},
+		"valid url with http scheme": {
+			url:         "http://google.com",
+			expectedErr: nil,
+		},
+		"invalid url no scheme": {
+			url:         "www.google.com",
+			expectedErr: errs.InvalidURIError,
+		},
+		"invalid url no colon": {
+			url:         "http//www.google.com",
+			expectedErr: errs.InvalidURIError,
+		},
+		"invalid only scheme": {
+			url:         "http",
+			expectedErr: errs.InvalidURIError,
+		},
+	}
+
+	for name, testCase := range tests {
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, testCase.expectedErr, VIsValidURI(testCase.url))
+		})
+	}
+}
+
+func TestVIsValidJson(t *testing.T) {
+	tests := map[string]struct {
+		url         string
+		expectedErr error
+	}{
+		"valid json": {
+			url:         `{"name":"jh123x"}`,
+			expectedErr: nil,
+		},
+		"valid empty arr": {
+			url:         `[]`,
+			expectedErr: nil,
+		},
+		"valid empty obj": {
+			url:         `{}`,
+			expectedErr: nil,
+		},
+		"invalid json": {
+			url:         `{"name":"jh123x"`,
+			expectedErr: errs.InvalidJsonError,
+		},
+		"empty json string": {
+			url:         ``,
+			expectedErr: errs.InvalidJsonError,
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, tc.expectedErr, VIsValidJson(tc.url))
+		})
+	}
+}
+
+func TestVIsValidEmail(t *testing.T) {
+	tests := map[string]struct {
+		email       string
+		expectedErr error
+	}{
+		"valid email": {
+			email:       "test@test.com",
+			expectedErr: nil,
+		},
+		"invalid email": {
+			email:       "test",
+			expectedErr: errs.InvalidEmailError,
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, tc.expectedErr, VIsValidEmail(tc.email))
+		})
+	}
+}

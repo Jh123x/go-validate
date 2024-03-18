@@ -14,7 +14,7 @@ func NewValueWrapper[T any](value T) *ValueValidator[T] {
 }
 
 func (v *ValueValidator[T]) WithOptions(options ...ttypes.ValTest[T]) *ValueValidator[T] {
-	if v == nil {
+	if v == (*ValueValidator[T])(nil) {
 		return nil
 	}
 	if v.err != nil {

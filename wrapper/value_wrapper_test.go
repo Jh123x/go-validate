@@ -52,23 +52,23 @@ func TestOptionCompatibility_SingleValues(t *testing.T) {
 			options:             options.VWithRequire(func(v int) bool { return false }, fmt.Errorf("value is error")),
 			expectedValidateErr: fmt.Errorf("value is error"),
 		},
-		"IsNotEmpty success": {
+		"IsNotDefault success": {
 			value:   1,
-			options: options.VIsNotEmpty[int](),
+			options: options.VIsNotDefault[int](),
 		},
-		"IsNotEmpty fail": {
+		"IsNotDefault fail": {
 			value:               0,
-			options:             options.VIsNotEmpty[int](),
-			expectedValidateErr: errs.IsNotEmptyErr,
+			options:             options.VIsNotDefault[int](),
+			expectedValidateErr: errs.IsNotDefaultErr,
 		},
-		"IsEmpty success": {
+		"IsDefault success": {
 			value:   0,
-			options: options.VIsEmpty[int](),
+			options: options.VIsDefault[int](),
 		},
-		"IsEmpty fail": {
+		"IsDefault fail": {
 			value:               1,
-			options:             options.VIsEmpty[int](),
-			expectedValidateErr: errs.IsEmptyError,
+			options:             options.VIsDefault[int](),
+			expectedValidateErr: errs.IsDefaultErr,
 		},
 		"nil option should return err": {
 			value:               1,
@@ -112,6 +112,24 @@ func TestOptionCompatibility_ArrValues(t *testing.T) {
 			value:               []int{1, 2, 3},
 			options:             options.VContains(4),
 			expectedValidateErr: errs.ContainsError,
+		},
+		"is empty success": {
+			value:   []int{},
+			options: options.VIsEmpty[int],
+		},
+		"is empty fail": {
+			value:               []int{1, 2, 3},
+			options:             options.VIsEmpty[int],
+			expectedValidateErr: errs.IsEmptyError,
+		},
+		"is not empty success": {
+			value:   []int{1, 2, 3},
+			options: options.VIsNotEmpty[int],
+		},
+		"is not empty fail": {
+			value:               []int{},
+			options:             options.VIsNotEmpty[int],
+			expectedValidateErr: errs.IsNotEmptyErr,
 		},
 		"and success": {
 			value: []int{1, 2, 3},
@@ -210,4 +228,23 @@ func TestOptionCompatibility_StringOptions(t *testing.T) {
 			assert.Equal(t, tc.expectedValidateErr, valueWrapper.Validate())
 		})
 	}
+}
+
+func TestValueWrapper_NilBehaviour(t *testing.T) {
+	var valueWrapper *ValueValidator[int]
+	assert.Equal(t, (*ValueValidator[int])(nil), valueWrapper)
+	assert.Nil(t, valueWrapper.Validate())
+	assert.Nil(t, valueWrapper.ToOption()())
+	assert.Nil(t, valueWrapper.WithOptions(
+		options.VIsDefault[int](),
+		options.VIsNotDefault[int](),
+	).Validate())
+	assert.Nil(t, valueWrapper.WithOptions(nil).ToOption()())
+}
+
+func TestValueWrapper_DoubleWrap(t *testing.T) {
+	valueWrapper := NewValueWrapper(1)
+	valueWrapper = valueWrapper.WithOptions(options.VIsDefault[int]())
+	valueWrapper = valueWrapper.WithOptions(options.VIsNotDefault[int]()) // Should not be used
+	assert.Equal(t, errs.IsDefaultErr, valueWrapper.Validate())
 }

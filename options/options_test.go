@@ -259,3 +259,251 @@ func TestContains(t *testing.T) {
 		})
 	}
 }
+
+func TestVWithRequire(t *testing.T) {
+	tests := map[string]struct {
+		val         string
+		testFn      func(string) bool
+		err         error
+		expectedErr error
+	}{
+		"testFn returns true": {
+			val:         "test",
+			testFn:      func(_ string) bool { return true },
+			err:         errTest,
+			expectedErr: nil,
+		},
+		"testFn returns false": {
+			val:         "test",
+			testFn:      func(_ string) bool { return false },
+			err:         errTest,
+			expectedErr: errTest,
+		},
+	}
+
+	for testName, tc := range tests {
+		t.Run(testName, func(t *testing.T) {
+			validateFn := VWithRequire(tc.testFn, tc.err)
+			assert.Equal(t, tc.expectedErr, validateFn(tc.val))
+		})
+	}
+}
+
+func TestVIsNotDefault(t *testing.T) {
+	tests := map[string]struct {
+		val         string
+		expectedErr error
+	}{
+		"is default string": {
+			val:         "",
+			expectedErr: errs.IsNotDefaultErr,
+		},
+		"not default string": {
+			val:         "test",
+			expectedErr: nil,
+		},
+	}
+
+	for testName, tc := range tests {
+		t.Run(testName, func(t *testing.T) {
+			assert.Equal(t, tc.expectedErr, VIsNotDefault[string]()(tc.val))
+		})
+	}
+}
+
+func TestVIsDefault(t *testing.T) {
+	tests := map[string]struct {
+		val         string
+		expectedErr error
+	}{
+		"is default string": {
+			val:         "",
+			expectedErr: nil,
+		},
+		"not default string": {
+			val:         "test",
+			expectedErr: errs.IsDefaultErr,
+		},
+	}
+
+	for testName, tc := range tests {
+		t.Run(testName, func(t *testing.T) {
+			assert.Equal(t, tc.expectedErr, VIsDefault[string]()(tc.val))
+		})
+	}
+}
+
+func TestVIsEmpty(t *testing.T) {
+	tests := map[string]struct {
+		val         []rune
+		expectedErr error
+	}{
+		"empty string": {
+			val:         []rune(""),
+			expectedErr: nil,
+		},
+		"non-empty string": {
+			val:         []rune("test"),
+			expectedErr: errs.IsEmptyError,
+		},
+	}
+
+	for testName, tc := range tests {
+		t.Run(testName, func(t *testing.T) {
+			assert.Equal(t, tc.expectedErr, VIsEmpty[rune](tc.val))
+		})
+	}
+}
+
+func TestVIsNotEmpty(t *testing.T) {
+	tests := map[string]struct {
+		val         []rune
+		expectedErr error
+	}{
+		"empty string": {
+			val:         []rune(""),
+			expectedErr: errs.IsNotEmptyErr,
+		},
+		"non-empty string": {
+			val:         []rune("test"),
+			expectedErr: nil,
+		},
+	}
+
+	for testName, tc := range tests {
+		t.Run(testName, func(t *testing.T) {
+			assert.Equal(t, tc.expectedErr, VIsNotEmpty[rune](tc.val))
+		})
+	}
+}
+
+func TestVIsLength(t *testing.T) {
+	tests := map[string]struct {
+		val         []rune
+		minLen      int
+		maxLen      int
+		expectedErr error
+	}{
+		"valid length": {
+			val:         []rune("test"),
+			minLen:      1,
+			maxLen:      5,
+			expectedErr: nil,
+		},
+		"invalid length": {
+			val:         []rune("test"),
+			minLen:      5,
+			maxLen:      10,
+			expectedErr: errs.InvalidLengthError,
+		},
+	}
+
+	for testName, tc := range tests {
+		t.Run(testName, func(t *testing.T) {
+			assert.Equal(t, tc.expectedErr, VIsLength[rune](tc.minLen, tc.maxLen)(tc.val))
+		})
+	}
+}
+
+func TestVContains(t *testing.T) {
+	tests := map[string]struct {
+		val         []rune
+		elem        rune
+		expectedErr error
+	}{
+		"contains element": {
+			val:         []rune("test"),
+			elem:        't',
+			expectedErr: nil,
+		},
+		"does not contain element": {
+			val:         []rune("test"),
+			elem:        'z',
+			expectedErr: errs.ContainsError,
+		},
+	}
+
+	for testName, tc := range tests {
+		t.Run(testName, func(t *testing.T) {
+			assert.Equal(t, tc.expectedErr, VContains[rune](tc.elem)(tc.val))
+		})
+	}
+}
+
+func TestVOr(t *testing.T) {
+	tests := map[string]struct {
+		val         []string
+		orOptions   []ttypes.ValTest[[]string]
+		expectedErr error
+	}{
+		"all options are valid": {
+			val: []string{"test", "test2"},
+			orOptions: []ttypes.ValTest[[]string]{
+				VIsNotEmpty[string],      // Success
+				VIsLength[string](1, 10), // Success
+			},
+			expectedErr: nil,
+		},
+		"one option is valid": {
+			val: []string{"test", "test2"},
+			orOptions: []ttypes.ValTest[[]string]{
+				VIsEmpty[string],         // Fail
+				VIsLength[string](1, 10), // Success
+			},
+			expectedErr: nil,
+		},
+		"no options are valid": {
+			val: []string{"test", "test2"},
+			orOptions: []ttypes.ValTest[[]string]{
+				VIsEmpty[string],          // Fail
+				VIsLength[string](10, 20), // Fail
+			},
+			expectedErr: errs.OrError,
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, tc.expectedErr, VOr[[]string](tc.orOptions...)(tc.val))
+		})
+	}
+}
+
+func TestVAnd(t *testing.T) {
+	tests := map[string]struct {
+		val         []string
+		andOptions  []ttypes.ValTest[[]string]
+		expectedErr error
+	}{
+		"all options are valid": {
+			val: []string{"test", "test2"},
+			andOptions: []ttypes.ValTest[[]string]{
+				VIsNotEmpty[string],      // Success
+				VIsLength[string](1, 10), // Success
+			},
+			expectedErr: nil,
+		},
+		"one option is valid": {
+			val: []string{"test", "test2"},
+			andOptions: []ttypes.ValTest[[]string]{
+				VIsEmpty[string],         // Fail
+				VIsLength[string](1, 10), // Success
+			},
+			expectedErr: errs.IsEmptyError,
+		},
+		"no options are valid": {
+			val: []string{"test", "test2"},
+			andOptions: []ttypes.ValTest[[]string]{
+				VIsEmpty[string],          // Fail
+				VIsLength[string](10, 20), // Fail
+			},
+			expectedErr: errs.IsEmptyError,
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, tc.expectedErr, VAnd[[]string](tc.andOptions...)(tc.val))
+		})
+	}
+}
