@@ -30,8 +30,8 @@ func TestValueWrapper(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			valueWrapper := NewValueWrapper(tc.value)
-			err := valueWrapper.WithOptions(tc.options).Validate()
+			valueWrapper := NewValueWrapper[int]()
+			err := valueWrapper.WithOptions(tc.options).Validate(tc.value)
 			assert.Equal(t, tc.expectedErr, err)
 		})
 	}
@@ -79,11 +79,11 @@ func TestOptionCompatibility_SingleValues(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			valueWrapper := NewValueWrapper(tc.value)
+			valueWrapper := NewValueWrapper[int]()
 			valueWrapper = valueWrapper.WithOptions(tc.options)
-			option := valueWrapper.ToOption()
+			option := valueWrapper.ToOption(tc.value)
 			assert.Equal(t, tc.expectedValidateErr, option())
-			assert.Equal(t, tc.expectedValidateErr, valueWrapper.Validate())
+			assert.Equal(t, tc.expectedValidateErr, valueWrapper.Validate(tc.value))
 		})
 	}
 }
@@ -180,8 +180,8 @@ func TestOptionCompatibility_ArrValues(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			valueWrapper := NewValueWrapper(tc.value)
-			option := valueWrapper.WithOptions(tc.options).ToOption()
+			valueWrapper := NewValueWrapper[[]int]()
+			option := valueWrapper.WithOptions(tc.options).ToOption(tc.value)
 			assert.Equal(t, tc.expectedValidateErr, option())
 		})
 	}
@@ -224,8 +224,8 @@ func TestOptionCompatibility_StringOptions(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			valueWrapper := NewValueWrapper(tc.value).WithOptions(tc.options)
-			assert.Equal(t, tc.expectedValidateErr, valueWrapper.Validate())
+			valueWrapper := NewValueWrapper[string]().WithOptions(tc.options)
+			assert.Equal(t, tc.expectedValidateErr, valueWrapper.Validate(tc.value))
 		})
 	}
 }
@@ -233,18 +233,18 @@ func TestOptionCompatibility_StringOptions(t *testing.T) {
 func TestValueWrapper_NilBehaviour(t *testing.T) {
 	var valueWrapper *ValueValidator[int]
 	assert.Equal(t, (*ValueValidator[int])(nil), valueWrapper)
-	assert.Nil(t, valueWrapper.Validate())
-	assert.Nil(t, valueWrapper.ToOption()())
+	assert.Nil(t, valueWrapper.Validate(1))
+	assert.Nil(t, valueWrapper.ToOption(1)())
 	assert.Nil(t, valueWrapper.WithOptions(
 		options.VIsDefault[int](),
 		options.VIsNotDefault[int](),
-	).Validate())
-	assert.Nil(t, valueWrapper.WithOptions(nil).ToOption()())
+	).Validate(1))
+	assert.Nil(t, valueWrapper.WithOptions(nil).ToOption(1)())
 }
 
 func TestValueWrapper_DoubleWrap(t *testing.T) {
-	valueWrapper := NewValueWrapper(1)
+	valueWrapper := NewValueWrapper[int]()
 	valueWrapper = valueWrapper.WithOptions(options.VIsDefault[int]())
 	valueWrapper = valueWrapper.WithOptions(options.VIsNotDefault[int]()) // Should not be used
-	assert.Equal(t, errs.IsDefaultErr, valueWrapper.Validate())
+	assert.Equal(t, errs.IsDefaultErr, valueWrapper.Validate(1))
 }

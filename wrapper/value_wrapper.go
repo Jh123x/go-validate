@@ -1,47 +1,38 @@
 package wrapper
 
-import "github.com/Jh123x/go-validate/ttypes"
+import (
+	"github.com/Jh123x/go-validate/options"
+	"github.com/Jh123x/go-validate/ttypes"
+)
 
 // ValueValidator is a wrapper for a value of type T.
 // You can use repeated Tests on the wrapper to check for the same boolean.
 type ValueValidator[T any] struct {
-	Value T
-	err   error
+	option ttypes.ValTest[T]
 }
 
-func NewValueWrapper[T any](value T) *ValueValidator[T] {
-	return &ValueValidator[T]{Value: value}
+func NewValueWrapper[T any]() *ValueValidator[T] {
+	return &ValueValidator[T]{}
 }
 
-func (v *ValueValidator[T]) WithOptions(options ...ttypes.ValTest[T]) *ValueValidator[T] {
+func (v *ValueValidator[T]) WithOptions(valOptions ...ttypes.ValTest[T]) *ValueValidator[T] {
 	if v == (*ValueValidator[T])(nil) {
 		return nil
 	}
-	if v.err != nil {
-		return v
-	}
-	for _, option := range options {
-		if option == nil {
-			continue
-		}
-		if err := option(v.Value); err != nil {
-			v.err = err
-			break
-		}
-	}
+	v.option = options.VAnd[T](v.option, options.VAnd(valOptions...))
 	return v
 }
 
-func (v *ValueValidator[T]) Validate() error {
+func (v *ValueValidator[T]) Validate(val T) error {
 	if v == nil {
 		return nil
 	}
-	return v.err
+	return v.option(val)
 }
 
-func (v *ValueValidator[T]) ToOption() ttypes.Validate {
+func (v *ValueValidator[T]) ToOption(val T) ttypes.Validate {
 	if v == nil {
 		return func() error { return nil }
 	}
-	return func() error { return v.err }
+	return func() error { return v.option(val) }
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/Jh123x/go-validate/errs"
 	"github.com/Jh123x/go-validate/options"
+	"github.com/Jh123x/go-validate/ttypes"
 	"github.com/invopop/validation"
 	"github.com/stretchr/testify/assert"
 )
@@ -19,10 +20,8 @@ type Response struct {
 	SetIfOptSet string         // Set if Optional is set, empty otherwise.
 }
 
-type testFn func(*Response) error
-
 // benchmarkValidator benchmarks the validateFn.
-func benchmarkValidator(b *testing.B, response *Response, validateFn testFn, hasErr bool) {
+func benchmarkValidator(b *testing.B, response *Response, validateFn ttypes.ValTest[*Response], hasErr bool) {
 	for i := 0; i < b.N; i++ {
 		err := validateFn(response)
 		assert.Equal(b, hasErr, err != nil, fmt.Sprintf("expected error: %v, got: %v", hasErr, err))
@@ -129,9 +128,9 @@ func validateResponseValidator(resp *Response) error {
 	).Validate()
 }
 
-// BenchmarkData benchmarks the different validators.
-func BenchmarkData(b *testing.B) {
-	algorithms := map[string]testFn{
+// BenchmarkConstructAndValidateData benchmarks the different validators.
+func BenchmarkConstructAndValidateData(b *testing.B) {
+	algorithms := map[string]ttypes.ValTest[*Response]{
 		"TestLazyValidator": validateResponseLazy,
 		"TestInvopop":       validateResponseInvopop,
 		"TestParallelLazy":  validateResponseParallelLazy,
