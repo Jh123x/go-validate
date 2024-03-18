@@ -8,6 +8,7 @@ import (
 	"github.com/Jh123x/go-validate/options"
 	"github.com/Jh123x/go-validate/ttypes"
 	"github.com/Jh123x/go-validate/validator"
+	"github.com/Jh123x/go-validate/wrapper"
 	"github.com/invopop/validation"
 	"github.com/stretchr/testify/assert"
 )
@@ -142,14 +143,49 @@ func validateResponseInvopop(resp *Response) error {
 	)
 }
 
+func validateResponseValueWrapperLong() ttypes.ValTest[*Response] {
+	validator := wrapper.NewValueWrapper[*Response]().WithOptions(
+		options.VWithRequire(func(r *Response) bool { return r.Code != 0 }, errs.IsEmptyError),
+		options.VWithRequire(func(r *Response) bool { return len(r.Message) > 0 }, errs.IsEmptyError),
+		options.VWithRequire(func(r *Response) bool { return r.Extras != nil }, errs.IsEmptyError),
+		options.VWithRequire(func(r *Response) bool { return len(r.Optional) > 0 && len(r.SetIfOptSet) == 0 }, errs.IsEmptyError),
+		options.VWithRequire(func(r *Response) bool {
+			return len(r.Optional) > 0 && len(r.SetIfOptSet) == 0 || len(r.Optional) == 0 && len(r.SetIfOptSet) > 0
+		}, errs.IsEmptyError),
+	)
+	return func(resp *Response) error {
+		return validator.Validate(resp)
+	}
+}
+
+func validateResponseValueWrapperShort() ttypes.ValTest[*Response] {
+	intValidator := wrapper.NewValueWrapper[int]().WithOptions(options.VIsNotDefault[int]())
+	validator := wrapper.NewValueWrapper[*Response]().WithOptions(
+		func(r *Response) error { return intValidator.Validate(r.Code) },
+		func(r *Response) error { return intValidator.Validate(len(r.Message)) },
+		options.VWithRequire(func(r *Response) bool { return r.Extras != nil }, errs.IsNotEmptyErr),
+		func(r *Response) error {
+			if len(r.Optional) > 0 && len(r.SetIfOptSet) == 0 || len(r.Optional) == 0 && len(r.SetIfOptSet) > 0 {
+				return errs.IsEmptyError
+			}
+			return nil
+		},
+	)
+	return func(resp *Response) error {
+		return validator.Validate(resp)
+	}
+}
+
 // BenchmarkOnlyValidate Data benchmarks the different validators only for their validation cost.
 func BenchmarkOnlyValidateData(b *testing.B) {
 	algorithms := map[string]ttypes.ValTest[*Response]{
-		"TestLazyValidator": validateOnlyResponseLazy(),
-		"TestInvopop":       validateResponseInvopop, // No Option to create a validator first.
-		"TestParallelLazy":  validateOnlyResponseParallelLazy(),
-		"TestValidator":     validateOnlyResponseValidator(),
-		"TestIfStmts":       validateIfImplementation,
+		"TestLazyValidator":     validateOnlyResponseLazy(),
+		"TestInvopop":           validateResponseInvopop, // No Option to create a validator first.
+		"TestParallelLazy":      validateOnlyResponseParallelLazy(),
+		"TestValidator":         validateOnlyResponseValidator(),
+		"TestIfStmts":           validateIfImplementation,
+		"TestValueWrapperLong":  validateResponseValueWrapperLong(),
+		"TestValueWrapperShort": validateResponseValueWrapperShort(),
 	}
 	tests := map[string]struct {
 		resp   Response
