@@ -21,6 +21,9 @@ func (v *ValueValidator[T]) WithOptions(options ...ttypes.ValTest[T]) *ValueVali
 		return v
 	}
 	for _, option := range options {
+		if option == nil {
+			continue
+		}
 		if err := option(v.Value); err != nil {
 			v.err = err
 			break
@@ -38,7 +41,7 @@ func (v *ValueValidator[T]) Validate() error {
 
 func (v *ValueValidator[T]) ToOption() ttypes.Validate {
 	if v == nil {
-		return nil
+		return func() error { return nil }
 	}
 	return func() error { return v.err }
 }

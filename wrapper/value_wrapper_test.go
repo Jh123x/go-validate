@@ -70,13 +70,20 @@ func TestOptionCompatibility_SingleValues(t *testing.T) {
 			options:             options.VIsEmpty[int](),
 			expectedValidateErr: errs.IsEmptyError,
 		},
+		"nil option should return err": {
+			value:               1,
+			options:             nil,
+			expectedValidateErr: nil,
+		},
 	}
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			valueWrapper := NewValueWrapper(tc.value)
-			option := valueWrapper.WithOptions(tc.options).ToOption()
+			valueWrapper = valueWrapper.WithOptions(tc.options)
+			option := valueWrapper.ToOption()
 			assert.Equal(t, tc.expectedValidateErr, option())
+			assert.Equal(t, tc.expectedValidateErr, valueWrapper.Validate())
 		})
 	}
 }
@@ -158,6 +165,49 @@ func TestOptionCompatibility_ArrValues(t *testing.T) {
 			valueWrapper := NewValueWrapper(tc.value)
 			option := valueWrapper.WithOptions(tc.options).ToOption()
 			assert.Equal(t, tc.expectedValidateErr, option())
+		})
+	}
+}
+
+func TestOptionCompatibility_StringOptions(t *testing.T) {
+	tests := map[string]struct {
+		value               string
+		options             ttypes.ValTest[string]
+		expectedValidateErr error
+	}{
+		"IsValidURI success": {
+			value:   "https://www.google.com",
+			options: options.VIsValidURI,
+		},
+		"IsValidURI fail": {
+			value:               "invalid url",
+			options:             options.VIsValidURI,
+			expectedValidateErr: errs.InvalidURIError,
+		},
+		"IsValidEmail success": {
+			value:   "test@test.com",
+			options: options.VIsValidEmail,
+		},
+		"IsValidEmail fail": {
+			value:               "invalid email",
+			options:             options.VIsValidEmail,
+			expectedValidateErr: errs.InvalidEmailError,
+		},
+		"IsValidJSON success": {
+			value:   `{"key": "value"}`,
+			options: options.VIsValidJson,
+		},
+		"IsValidJSON fail": {
+			value:               "invalid json",
+			options:             options.VIsValidJson,
+			expectedValidateErr: errs.InvalidJsonError,
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			valueWrapper := NewValueWrapper(tc.value).WithOptions(tc.options)
+			assert.Equal(t, tc.expectedValidateErr, valueWrapper.Validate())
 		})
 	}
 }
