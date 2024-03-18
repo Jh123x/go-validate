@@ -1,4 +1,4 @@
-package validator
+package main
 
 import (
 	"fmt"
@@ -9,30 +9,7 @@ import (
 	"github.com/Jh123x/go-validate/ttypes"
 	"github.com/Jh123x/go-validate/validator"
 	"github.com/Jh123x/go-validate/wrapper"
-	"github.com/invopop/validation"
-	"github.com/stretchr/testify/assert"
 )
-
-var (
-	errTest = fmt.Errorf("test error")
-)
-
-/* Test Scenario for Benchmarking */
-type Response struct {
-	Code        int            // Must be non-zero.
-	Message     string         // Must be non-empty.
-	Extras      map[string]any // Must be non-nil.
-	Optional    string         // Optional.
-	SetIfOptSet string         // Set if Optional is set, empty otherwise.
-}
-
-// benchmarkValidator benchmarks the validateFn.
-func benchmarkValidator(b *testing.B, response *Response, validateFn ttypes.ValTest[*Response], hasErr bool) {
-	for i := 0; i < b.N; i++ {
-		err := validateFn(response)
-		assert.Equal(b, hasErr, err != nil, fmt.Sprintf("expected error: %v, got: %v", hasErr, err))
-	}
-}
 
 // validateOnlyResponseLazy is a benchmark for the Lazy Evaluator.
 func validateOnlyResponseLazy() ttypes.ValTest[*Response] {
@@ -100,50 +77,7 @@ func validateOnlyResponseValidator() ttypes.ValTest[*Response] {
 	}
 }
 
-// validateIfImplementation is a benchmark for just pure if statements.
-func validateIfImplementation(resp *Response) error {
-	if resp.Code == 0 {
-		return errs.IsEmptyError
-	}
-
-	if len(resp.Message) == 0 {
-		return errs.IsEmptyError
-	}
-
-	if resp.Extras == nil {
-		return errs.IsEmptyError
-	}
-
-	if len(resp.Optional) > 0 && len(resp.SetIfOptSet) == 0 {
-		return errs.IsEmptyError
-	}
-
-	if len(resp.Optional) == 0 && len(resp.SetIfOptSet) > 0 {
-		return errs.IsEmptyError
-	}
-	return nil
-}
-
-// validateResponseInvopop is a benchmark for the Invopop Validation Library.
-func validateResponseInvopop(resp *Response) error {
-	return validation.ValidateStruct(
-		resp,
-		validation.Field(&resp.Code, validation.Required),
-		validation.Field(&resp.Message, validation.Required),
-		validation.Field(&resp.Extras, validation.NotNil),
-		validation.Field(
-			&resp.SetIfOptSet,
-			validation.Required.When(
-				len(resp.Optional) > 0,
-			),
-			validation.Empty.When(
-				len(resp.Optional) == 0,
-			),
-		),
-	)
-}
-
-func validateResponseValueWrapperLong() ttypes.ValTest[*Response] {
+func validateOnlyResponseValueWrapperLong() ttypes.ValTest[*Response] {
 	validator := wrapper.NewValueWrapper[*Response]().WithOptions(
 		options.VWithRequire(func(r *Response) bool { return r.Code != 0 }, errs.IsEmptyError),
 		options.VWithRequire(func(r *Response) bool { return len(r.Message) > 0 }, errs.IsEmptyError),
@@ -155,7 +89,7 @@ func validateResponseValueWrapperLong() ttypes.ValTest[*Response] {
 	return func(resp *Response) error { return validator.Validate(resp) }
 }
 
-func validateResponseValueWrapperShort() ttypes.ValTest[*Response] {
+func validateOnlyResponseValueWrapperShort() ttypes.ValTest[*Response] {
 	intValidator := wrapper.NewValueWrapper[int]().WithOptions(options.VIsNotDefault[int]())
 	validator := wrapper.NewValueWrapper[*Response]().WithOptions(
 		func(r *Response) error { return intValidator.Validate(r.Code) },
@@ -179,8 +113,8 @@ func BenchmarkOnlyValidateData(b *testing.B) {
 		"TestParallelLazy":      validateOnlyResponseParallelLazy(),
 		"TestValidator":         validateOnlyResponseValidator(),
 		"TestIfStmts":           validateIfImplementation,
-		"TestValueWrapperLong":  validateResponseValueWrapperLong(),
-		"TestValueWrapperShort": validateResponseValueWrapperShort(),
+		"TestValueWrapperLong":  validateOnlyResponseValueWrapperLong(),
+		"TestValueWrapperShort": validateOnlyResponseValueWrapperShort(),
 	}
 	tests := map[string]struct {
 		resp   Response
