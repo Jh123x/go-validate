@@ -70,7 +70,7 @@ func TestOptionCompatibility_SingleValues(t *testing.T) {
 			options:             options.VIsDefault[int](),
 			expectedValidateErr: errs.IsDefaultErr,
 		},
-		"nil option should return err": {
+		"nil option should return no err": {
 			value:               1,
 			options:             nil,
 			expectedValidateErr: nil,
