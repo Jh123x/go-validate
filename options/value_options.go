@@ -54,7 +54,7 @@ func VContains[T comparable](elem T) ttypes.ValTest[[]T] {
 	}
 }
 
-func VOr[T comparable](options ...ttypes.ValTest[T]) ttypes.ValTest[T] {
+func VOr[T any](options ...ttypes.ValTest[T]) ttypes.ValTest[T] {
 	return func(val T) error {
 		for _, option := range options {
 			if err := option(val); err == nil {
@@ -65,7 +65,7 @@ func VOr[T comparable](options ...ttypes.ValTest[T]) ttypes.ValTest[T] {
 	}
 }
 
-func VAnd[T comparable](options ...ttypes.ValTest[T]) ttypes.ValTest[T] {
+func VAnd[T any](options ...ttypes.ValTest[T]) ttypes.ValTest[T] {
 	return func(val T) error {
 		for _, option := range options {
 			if err := option(val); err != nil {
