@@ -1,4 +1,4 @@
-package validator
+package main
 
 import (
 	"fmt"
@@ -6,32 +6,15 @@ import (
 
 	"github.com/Jh123x/go-validate/errs"
 	"github.com/Jh123x/go-validate/options"
+	"github.com/Jh123x/go-validate/ttypes"
+	"github.com/Jh123x/go-validate/validator"
+	"github.com/Jh123x/go-validate/wrapper"
 	"github.com/invopop/validation"
-	"github.com/stretchr/testify/assert"
 )
-
-/* Test Scenario for Benchmarking */
-type Response struct {
-	Code        int            // Must be non-zero.
-	Message     string         // Must be non-empty.
-	Extras      map[string]any // Must be non-nil.
-	Optional    string         // Optional.
-	SetIfOptSet string         // Set if Optional is set, empty otherwise.
-}
-
-type testFn func(*Response) error
-
-// benchmarkValidator benchmarks the validateFn.
-func benchmarkValidator(b *testing.B, response *Response, validateFn testFn, hasErr bool) {
-	for i := 0; i < b.N; i++ {
-		err := validateFn(response)
-		assert.Equal(b, hasErr, err != nil, fmt.Sprintf("expected error: %v, got: %v", hasErr, err))
-	}
-}
 
 // validateResponseLazy is a benchmark for the Lazy Evaluator.
 func validateResponseLazy(resp *Response) error {
-	return NewLazyValidator().WithOptions(
+	return validator.NewLazyValidator().WithOptions(
 		options.IsNotEmpty(resp.Code),
 		options.IsNotEmpty(resp.Message),
 		options.WithRequire(func() bool { return resp.Extras != nil }, errTest),
@@ -50,7 +33,7 @@ func validateResponseLazy(resp *Response) error {
 
 // validateResponseParallelLazy is a benchmark for the Parallel Lazy Evaluator.
 func validateResponseParallelLazy(resp *Response) error {
-	return NewParallelLazyValidator().WithOptions(
+	return validator.NewParallelLazyValidator().WithOptions(
 		options.IsNotEmpty(resp.Code),
 		options.IsNotEmpty(resp.Message),
 		options.WithRequire(func() bool { return resp.Extras != nil }, errTest),
@@ -112,7 +95,7 @@ func validateResponseInvopop(resp *Response) error {
 
 // validateResponseValidator is a benchmark for the normal Validator.
 func validateResponseValidator(resp *Response) error {
-	return NewValidator().WithOptions(
+	return validator.NewValidator().WithOptions(
 		options.IsNotEmpty(resp.Code),
 		options.IsNotEmpty(resp.Message),
 		options.WithRequire(func() bool { return resp.Extras != nil }, errTest),
@@ -129,14 +112,42 @@ func validateResponseValidator(resp *Response) error {
 	).Validate()
 }
 
-// BenchmarkData benchmarks the different validators.
-func BenchmarkData(b *testing.B) {
-	algorithms := map[string]testFn{
-		"TestLazyValidator": validateResponseLazy,
-		"TestInvopop":       validateResponseInvopop,
-		"TestParallelLazy":  validateResponseParallelLazy,
-		"TestValidator":     validateResponseValidator,
-		"TestIfStmts":       validateIfImplementation,
+func validateResponseValueWrapperLong(resp *Response) error {
+	return wrapper.NewValueWrapper[*Response]().WithOptions(
+		options.VWithRequire(func(r *Response) bool { return r.Code != 0 }, errs.IsEmptyError),
+		options.VWithRequire(func(r *Response) bool { return len(r.Message) > 0 }, errs.IsEmptyError),
+		options.VWithRequire(func(r *Response) bool { return r.Extras != nil }, errs.IsEmptyError),
+		options.VWithRequire(func(r *Response) bool {
+			return len(r.Optional) > 0 && len(r.SetIfOptSet) > 0 || len(r.Optional) == 0 && len(r.SetIfOptSet) == 0
+		}, errs.IsEmptyError),
+	).Validate(resp)
+}
+
+func validateResponseValueWrapperShort(resp *Response) error {
+	intValidator := wrapper.NewValueWrapper[int]().WithOptions(options.VIsNotDefault[int]())
+	return wrapper.NewValueWrapper[*Response]().WithOptions(
+		func(r *Response) error { return intValidator.Validate(r.Code) },
+		func(r *Response) error { return intValidator.Validate(len(r.Message)) },
+		options.VWithRequire(func(r *Response) bool { return r.Extras != nil }, errs.IsNotEmptyErr),
+		func(r *Response) error {
+			if len(r.Optional) > 0 && len(r.SetIfOptSet) > 0 || len(r.Optional) == 0 && len(r.SetIfOptSet) == 0 {
+				return nil
+			}
+			return errs.IsEmptyError
+		},
+	).Validate(resp)
+}
+
+// BenchmarkConstructAndValidateData benchmarks the different validators.
+func BenchmarkConstructAndValidateData(b *testing.B) {
+	algorithms := map[string]ttypes.ValTest[*Response]{
+		"TestLazyValidator":     validateResponseLazy,
+		"TestInvopop":           validateResponseInvopop,
+		"TestParallelLazy":      validateResponseParallelLazy,
+		"TestValidator":         validateResponseValidator,
+		"TestIfStmts":           validateIfImplementation,
+		"TestValueWrapperLong":  validateResponseValueWrapperLong,
+		"TestValueWrapperShort": validateResponseValueWrapperShort,
 	}
 	tests := map[string]struct {
 		resp   Response
