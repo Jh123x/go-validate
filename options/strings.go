@@ -30,6 +30,7 @@ func IsValidEmail(email string) types.Validate {
 	}, errs.InvalidEmailError)
 }
 
+// VIsValidURI validates that the provided string is a valid URL.
 func VIsValidURI(uriStr string) error {
 	_, err := url.ParseRequestURI(uriStr)
 	if err != nil {
@@ -38,6 +39,7 @@ func VIsValidURI(uriStr string) error {
 	return nil
 }
 
+// VIsValidJson validates that the provided string is a valid JSON.
 func VIsValidJson(jsonStr string) error {
 	if !json.Valid([]byte(jsonStr)) {
 		return errs.InvalidJsonError
@@ -45,6 +47,7 @@ func VIsValidJson(jsonStr string) error {
 	return nil
 }
 
+// VIsValidEmail validates the provided string is a valid email address.
 func VIsValidEmail(email string) error {
 	if !emailRegex.MatchString(email) {
 		return errs.InvalidEmailError
